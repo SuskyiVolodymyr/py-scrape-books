@@ -1,3 +1,5 @@
+from typing import Generator
+
 import scrapy
 from scrapy import Selector
 from scrapy.http import Response
@@ -11,11 +13,11 @@ class BooksSpider(scrapy.Spider):
     name = "books"
     start_urls = ["https://books.toscrape.com"]
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.driver = webdriver.Chrome()
 
-    def _parse_detail_page(self, response: Response, book: Selector):
+    def _parse_detail_page(self, response: Response, book: Selector) -> dict:
         detailed_url = response.urljoin(book.css("h3 a::attr(href)").get())
         self.driver.get(detailed_url)
         main = self.driver.find_element(By.CLASS_NAME, "product_main")
@@ -53,7 +55,7 @@ class BooksSpider(scrapy.Spider):
             "upc": upc,
         }
 
-    def parse(self, response, **kwargs):
+    def parse(self, response, **kwargs) -> Generator[dict, None, None]:
         for book in response.css("article.product_pod"):
             yield self._parse_detail_page(response, book)
 
