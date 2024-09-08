@@ -4,6 +4,8 @@ from scrapy.http import Response
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+RATING_STR_TO_INT = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
+
 
 class BooksSpider(scrapy.Spider):
     name = "books"
@@ -14,7 +16,6 @@ class BooksSpider(scrapy.Spider):
         self.driver = webdriver.Chrome()
 
     def _parse_detail_page(self, response: Response, book: Selector):
-        RATING_STR_TO_INT = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
         detailed_url = response.urljoin(book.css("h3 a::attr(href)").get())
         self.driver.get(detailed_url)
         main = self.driver.find_element(By.CLASS_NAME, "product_main")
